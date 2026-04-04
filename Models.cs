@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 public class User
 {
     private Guid _id;
@@ -13,21 +15,41 @@ public class User
         account = new Account(bank_name);
     }
 
+    public string id
+    {
+        get => _id.ToString("D");
+    }
+
+    public string name
+    {
+        get => $"{first} {last}";
+    }
+
+    public string acc_no
+    {
+        get => account.id;
+    }
+
 }
 
 public class Account
 {
-    private long id;
+    private long _id;
     private Bank bank;
     private static int[] prefix_list = [207, 142, 657];
 
     public Account (Bank bank_name)
     {
-        int acc_prefix = prefix_list[Random.Shared.Next(prefix_list.Length)];
+        int acc_prefix =prefix_list[Random.Shared.Next(prefix_list.Length)];
         long acc_suffix = Random.Shared.Next(0, 10000000);
 
-        id = (acc_prefix * 10000000) + acc_suffix;
+        _id = (acc_prefix * 10000000) + acc_suffix;
         bank = bank_name;
+    }
+
+    public string id
+    {
+        get => $"{_id}";
     }
 }
 
