@@ -40,14 +40,19 @@ public class User
         account.Add(amount); // to return transaction
     }
 
-    public Transaction Withdrawal(long amount)
+    public Transaction Withdraw(long amount)
     {
         return account.Subtract(amount);
     }
 
-    public Transaction Transfer(long amount, Bank otherbank, Account acc_no)
+    public Transaction Transfer(long amount, Account acc)
     {
-        return account.Transfer(amount, acc_no);
+        return account.Transfer(amount, acc);
+    }
+
+    public TransactionWithOtherBank TransferToOtherBank(long amount, Account acc, OtherBank bank)
+    {
+        return account.TransferToOtherBank(amount, acc, bank);
     }
 
 }
@@ -55,18 +60,19 @@ public class User
 public class Account
 {
     private long _id;
-    private Bank _bank;
     private static int[] prefix_list = [207, 142, 657];
     private long _balance;
     private Transaction[] _transactions;
+    private TransactionWithOtherBank[] _transactions_with_other_bank;
+
+
     public Account (Bank bank_name)
     {
-        int acc_prefix =prefix_list[Random.Shared.Next(prefix_list.Length)];
+        int acc_prefix = prefix_list[Random.Shared.Next(prefix_list.Length)];
         long acc_suffix = Random.Shared.Next(0, 10000000);
-
         _id = (acc_prefix * 10000000) + acc_suffix;
-        _bank = bank_name;
         _transactions = [];
+        _transactions_with_other_bank = [];
     }
 
     public string id
@@ -77,11 +83,6 @@ public class Account
     public long balance
     {
         get => _balance;
-    }
-
-    public string bank
-    {
-        get => _bank.ToString();
     }
 
     public void Add(long amount)
@@ -99,10 +100,18 @@ public class Account
         return transaction;
     }
 
-    public Transaction Transfer(long amount, Account acc_no)
+    public Transaction Transfer(long amount, Account acc)
     {
-        Transaction transaction = new Transaction("Outbound - Transfer", amount, acc_no);
+        Transaction transaction = new Transaction("Outbound - Transfer", amount, acc);
         _transactions.Append(transaction);
+        _balance -= amount;
+        return transaction;
+    }
+
+    public TransactionWithOtherBank TransferToOtherBank(long amount, Account acc, OtherBank bank)
+    {
+        TransactionWithOtherBank transaction = new TransactionWithOtherBank(amount, acc, bank);
+        _transactions_with_other_bank.Append(transaction);
         _balance -= amount;
         return transaction;
     }
@@ -113,9 +122,7 @@ public class Transaction
     private string _type; // outbound or inbound
     private Guid id;
     private long _amount; // 89700393456
-
     private Account _recipient;
-    private string bank_name;
 
     public Transaction(string type, long amount, Account account)
     {
@@ -123,17 +130,41 @@ public class Transaction
         _type = type;
         _amount = amount;
         _recipient = account;
-        bank_name = account.bank;
 
+    }
+}
 
+public class TransactionWithOtherBank
+{    
+    private Guid id;
+    private long _amount; // 89700393456
+    private Account _recipient;
+    private OtherBank _bank;
+    public TransactionWithOtherBank(long amount, Account account, OtherBank bank)
+    {
+        id = Guid.NewGuid();
+        _amount = amount;
+        _recipient = account;
+        _bank = bank;
     }
 }
 
 public class Bank
 {
+    private static string _name = "OurBank";
+
+    public override string ToString()
+    {
+        return $"{_name}";
+    }
+
+}
+
+public class OtherBank
+{
     private string _name;
 
-    public Bank(string name)
+    public OtherBank(string name)
     {
         _name = name;
     }
