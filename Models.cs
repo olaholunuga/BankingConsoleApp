@@ -4,13 +4,17 @@ public class User
     private string first;
     private string last;
     private Account account;
+    private DateTime _d_o_b;
+    private string _password;
 
-    public User (string lastName, string firstName, Bank bank_name)
+    public User (string lastName, string firstName, Bank bank, DateTime d_o_b, string password)
     {
         first = firstName;
         last = lastName;
         _id = Guid.NewGuid();
-        account = new Account(bank_name);
+        account = new Account(bank);
+        _d_o_b = d_o_b;
+        _password = password;
     }
 
     public string id
