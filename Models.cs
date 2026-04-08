@@ -1,20 +1,32 @@
+namespace Models;
 public class User
 {
     private Guid _id;
     private string first;
     private string last;
-    private Account account;
+    private Account _account;
     private DateTime _d_o_b;
     private string _password;
+
+    public Account account
+    {
+        get => _account;
+    }
 
     public User (string lastName, string firstName, Bank bank, DateTime d_o_b, string password)
     {
         first = firstName;
         last = lastName;
         _id = Guid.NewGuid();
-        account = new Account(bank);
+        _account = new Account(bank);
         _d_o_b = d_o_b;
         _password = password;
+    }
+
+    public override string ToString()
+    {
+
+        return $"[User] {this.id} - {this.name}\nAcc: {this._account.id}";
     }
 
     public string id
@@ -27,31 +39,26 @@ public class User
         get => $"{first} {last}";
     }
 
-    public long _balance
+    public double _balance
     {
-        get => account.balance;
-    }
-
-    public string acc_no
-    {
-        get => account.id;
+        get => _account.balance;
     }
 
     // user methods
 
-    public void Save(long amount)
+    public void Save(double amount)
     {
         account.Add(amount); // to return transaction
     }
 
-    public Transaction Withdraw(long amount)
+    public Transaction Withdraw(double amount)
     {
         return account.Subtract(amount);
     }
 
-    public Transaction Transfer(long amount, Account acc)
+    public Transaction Transfer(double amount, User recepient)
     {
-        return account.Transfer(amount, acc);
+        return account.Transfer(amount, recepient);
     }
 
     public TransactionWithOtherBank TransferToOtherBank(long amount, Account acc, OtherBank bank)
@@ -65,7 +72,7 @@ public class Account
 {
     private long _id;
     private static int[] prefix_list = [207, 142, 657];
-    private long _balance;
+    private double _balance;
     private Transaction[] _transactions;
     private TransactionWithOtherBank[] _transactions_with_other_bank;
 
@@ -77,6 +84,7 @@ public class Account
         _id = (acc_prefix * 10000000) + acc_suffix;
         _transactions = [];
         _transactions_with_other_bank = [];
+        _balance = 30.00;
     }
 
     public string id
@@ -84,19 +92,24 @@ public class Account
         get => $"{_id}";
     }
 
-    public long balance
+    public double balance
     {
         get => _balance;
     }
 
-    public void Add(long amount)
+    public override string ToString()
+    {
+        return $"[Account] {this.id} {this.balance}";
+    }
+
+    public void Add(double amount)
     {
         Transaction transaction = new Transaction("Inbound - Saving", amount, this);
         _transactions.Append(transaction);
         _balance += amount;
     }
 
-    public Transaction Subtract(long amount)
+    public Transaction Subtract(double amount)
     {
        Transaction transaction = new Transaction("Outbound - Withdrawal", amount, this);
         _transactions.Append(transaction);
@@ -104,19 +117,19 @@ public class Account
         return transaction;
     }
 
-    public Transaction Transfer(long amount, Account acc)
+    public Transaction Transfer(double amount,  User recepient)
     {
-        Transaction transaction = new Transaction("Outbound - Transfer", amount, acc);
+        Transaction transaction = new Transaction("Outbound - Transfer", amount, recepient.account);
         _transactions.Append(transaction);
         _balance -= amount;
         return transaction;
     }
 
-    public TransactionWithOtherBank TransferToOtherBank(long amount, Account acc, OtherBank bank)
+    public TransactionWithOtherBank TransferToOtherBank(double amount, Account acc, OtherBank bank)
     {
         TransactionWithOtherBank transaction = new TransactionWithOtherBank(amount, acc, bank);
-        _transactions_with_other_bank.Append(transaction);
         _balance -= amount;
+        _transactions_with_other_bank.Append(transaction);
         return transaction;
     }
 }
@@ -125,10 +138,10 @@ public class Transaction
 {
     private string _type; // outbound or inbound
     private Guid id;
-    private long _amount; // 89700393456
+    private double _amount; // 89700393456
     private Account _recipient;
 
-    public Transaction(string type, long amount, Account account)
+    public Transaction(string type, double amount, Account account)
     {
         id = Guid.NewGuid();
         _type = type;
@@ -141,10 +154,10 @@ public class Transaction
 public class TransactionWithOtherBank
 {    
     private Guid id;
-    private long _amount; // 89700393456
+    private double _amount; // 89700393456
     private Account _recipient;
     private OtherBank _bank;
-    public TransactionWithOtherBank(long amount, Account account, OtherBank bank)
+    public TransactionWithOtherBank(double amount, Account account, OtherBank bank)
     {
         id = Guid.NewGuid();
         _amount = amount;
@@ -155,11 +168,27 @@ public class TransactionWithOtherBank
 
 public class Bank
 {
-    private static string _name = "OurBank";
+    private string _name = "OurBank";
 
     public override string ToString()
     {
         return $"{_name}";
+    }
+
+    public void transfer_to_ourbank(User current_user, User recepient, Double amount, out string response)
+    {
+        if (amount > current_user.account.balance)
+        {
+           response = $"Failed: Insurficient balance"; 
+        }
+        current_user.Transfer(amount, recepient);
+        recepient.Save(amount);
+        response = "SUCCESS";
+    }
+
+    public void Transfer_to_other_banks(User current_user, int amount)
+    {
+        
     }
 
 }
