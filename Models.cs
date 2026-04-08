@@ -13,14 +13,21 @@ public class User
         get => _account;
     }
 
-    public User (string lastName, string firstName, Bank bank, DateTime d_o_b, string password)
+    public User (string lastName, string firstName, DateTime d_o_b, string password, Bank bank = null)
     {
         first = firstName;
         last = lastName;
         _id = Guid.NewGuid();
-        _account = new Account(bank);
-        _d_o_b = d_o_b;
+        if (bank == null)
+        {
+            _account = new Account();
+        }
+        else
+        {
+            _account = new OtherBankAccount();
+        }
         _password = password;
+        _d_o_b = d_o_b;
     }
 
     public override string ToString()
@@ -61,9 +68,9 @@ public class User
         return account.Transfer(amount, recepient);
     }
 
-    public TransactionWithOtherBank TransferToOtherBank(long amount, Account acc, OtherBank bank)
+    public TransactionWithOtherBank TransferToOtherBank(double amount, User receipient, OtherBank bank)
     {
-        return account.TransferToOtherBank(amount, acc, bank);
+        return account.TransferToOtherBank(amount, receipient, bank);
     }
 
 }
@@ -77,7 +84,7 @@ public class Account
     private TransactionWithOtherBank[] _transactions_with_other_bank;
 
 
-    public Account (Bank bank_name)
+    public Account ()
     {
         int acc_prefix = prefix_list[Random.Shared.Next(prefix_list.Length)];
         long acc_suffix = Random.Shared.Next(0, 10000000);
@@ -125,12 +132,28 @@ public class Account
         return transaction;
     }
 
-    public TransactionWithOtherBank TransferToOtherBank(double amount, Account acc, OtherBank bank)
+    public TransactionWithOtherBank TransferToOtherBank(double amount, User receipient, OtherBank bank)
     {
-        TransactionWithOtherBank transaction = new TransactionWithOtherBank(amount, acc, bank);
+        TransactionWithOtherBank transaction = new TransactionWithOtherBank(amount, receipient, bank);
         _balance -= amount;
         _transactions_with_other_bank.Append(transaction);
         return transaction;
+    }
+}
+
+public class OtherBankAccount : Account
+{
+    private long _id;
+    private static int[] prefix_list = [207, 142, 657];
+    private double _balance;
+    private Transaction[] _transactions;
+    public OtherBankAccount ()
+    {
+        int acc_prefix = prefix_list[Random.Shared.Next(prefix_list.Length)];
+        long acc_suffix = Random.Shared.Next(0, 10000000);
+        _id = (acc_prefix * 10000000) + acc_suffix;
+        _transactions = [];
+        _balance = 30.00;
     }
 }
 
@@ -155,13 +178,13 @@ public class TransactionWithOtherBank
 {    
     private Guid id;
     private double _amount; // 89700393456
-    private Account _recipient;
+    private User _recipient;
     private OtherBank _bank;
-    public TransactionWithOtherBank(double amount, Account account, OtherBank bank)
+    public TransactionWithOtherBank(double amount, User receipient, OtherBank bank)
     {
         id = Guid.NewGuid();
         _amount = amount;
-        _recipient = account;
+        _recipient = receipient;
         _bank = bank;
     }
 }
@@ -175,22 +198,28 @@ public class Bank
         return $"{_name}";
     }
 
-    public void transfer_to_ourbank(User current_user, User recepient, Double amount, out string response)
+    public void transfer_to_ourbank(User current_user, User recepient, double amount, out string response)
     {
         if (amount > current_user.account.balance)
         {
-           response = $"Failed: Insurficient balance"; 
+           response = "Failed: Insurficient balance"; 
         }
         current_user.Transfer(amount, recepient);
         recepient.Save(amount);
         response = "SUCCESS";
     }
 
-    public void Transfer_to_other_banks(User current_user, int amount)
+    public void Transfer_to_other_banks(User current_user, User recepient, OtherBank bank, double amount, out string response)
     {
-        
+        if (amount > current_user.account.balance)
+        {
+           response = "Failed: Insurficient balance"; 
+           return;
+        }
+        current_user.TransferToOtherBank(amount, recepient, bank);
+        bank.receive_from_other_banks(current_user, recepient, amount, out string res);
+        response = res;
     }
-
 }
 
 public class OtherBank
@@ -205,6 +234,12 @@ public class OtherBank
     public override string ToString()
     {
         return $"{_name}";
+    }
+
+    public void receive_from_other_banks(User sender, User recepient, double amount, out string response)
+    {
+        recepient.Save(amount);
+        response = "SUCCESS";
     }
 
 }
