@@ -51,6 +51,7 @@ while (keep_going)
     string _continue = Console.ReadLine() ?? "";
     if (_continue == "no" || _continue == "NO" || _continue == "No" || _continue == "n")
     {
+        Console.WriteLine("Thank you for banking with us");
         keep_going = false;
     }
 }
@@ -59,7 +60,7 @@ User login()
 {
     Console.WriteLine("Enter your account number: ");
     var acc_number = Console.ReadLine() ?? ""; 
-    User? user = get_user_and_account(acc_number, out Account? acc);
+    User? user = get_user(acc_number);
     if (user == null)
     {
         Console.WriteLine("Account number does not exist");
@@ -69,56 +70,72 @@ User login()
     return current_user;
 }
 
-User get_user_and_account(String acc_no, out Account? acc)
+User get_user(String acc_no)
 {
     foreach (var user in users)
     {
-        acc = user.account;
+        Account acc = user.account;
         if (acc.id == acc_no)
         {
             return user;
         }
     }
-    acc = null;
     return null;
 }
 
 void transfer()
 {
     User current_user = login();
-    Console.WriteLine("""
-    1. OurBank To OurBank
-    2. Transfer to other banks
-    """);
+
     string transfer_id;
     do
     {
-        transfer_id = Console.ReadLine() ?? "";
+        Console.WriteLine("""
+        1. OurBank To OurBank
+        2. Transfer to other banks
+        """);
 
-    } while (transfer_id == "");
+        transfer_id = Console.ReadLine() ?? "";
+        if (transfer_id != "1" || transfer_id != "2")
+        {
+            Console.WriteLine("""
+            Invalid Input!
+            """);
+        }
+    } while (transfer_id != "1" || transfer_id != "2");
+
+
     if (transfer_id == "1")
     {
-        Console.WriteLine("Enter recipient's account number: ");
+        Console.Write($"""
+        ----------- Transfer to OurBank ---------------
+        Enter recipient's account number: 
+        """);
         string recipient_acc = Console.ReadLine() ?? "";
-        User? recepient = get_user_and_account(recipient_acc, out Account? acc);
-        Console.WriteLine("how much do you want to send");
+        User? recepient = get_user(recipient_acc);
+        if (recepient == null)
+        {
+            Console.WriteLine("""
+            Invalid Account!
+            """);
+            ;
+        }
+        Console.Write("Enter amount to send: ");
         double amount = Convert.ToDouble(Console.ReadLine());
         bank.transfer_to_ourbank(current_user, recepient, amount, out string response);
         Console.WriteLine($"""
-        you: {current_user} your balance: {current_user.account.balance} 
+        your new balance: {current_user.account.balance} 
 
-        recepient: {recepient} balance: {recepient.account.balance}
+        recepient: {recepient.name.ToString()} Credited
         
-        {response}
+        Transfer Successful
+
         """);
-    } else if (transfer_id == "2")
-    {
-        
-    } else
+    }
+    else
     {
         
     }
-
 }
 
 void create_new_account()
