@@ -30,6 +30,11 @@ public class User
         _d_o_b = d_o_b;
     }
 
+    public bool check_password(string pass)
+    {
+        return pass == this._password;
+    }
+
     public override string ToString()
     {
 
@@ -251,6 +256,7 @@ public class OtherBank
 
     public User get_user_by_acc_no(string acc_no)
     {
+        Console.WriteLine($"{this._bank_users.ToString()}");
         foreach(var user in this._bank_users)
         {
             if (user.account.id == acc_no)
@@ -262,3 +268,25 @@ public class OtherBank
     }
 
 }
+
+
+/*
+
+
+
+Console.WriteLine($"""
+----------------- uba bank users ------
+{ubabankuser1}
+{ubabankuser2}
+""");
+
+Console.WriteLine($"""
+{users[0]}
+{users[1]}
+""");
+
+this._bank_users.ForEach(Console.WriteLine);
+Console.WriteLine($"-----------{this._name}");
+
+
+*/

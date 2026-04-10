@@ -2,7 +2,7 @@
 
 bool keep_going = true;
 
-Bank bank = new Bank();
+Bank ourbank = new Bank();
 
 OtherBank[] banks =
 {
@@ -11,11 +11,6 @@ OtherBank[] banks =
     new OtherBank("Union Bank"),
     new OtherBank("Access Bank")
 };
-
-OtherBank bank1 = new OtherBank("UBA");
-OtherBank bank2 = new OtherBank("Stanbic IBTC");
-OtherBank bank3 = new OtherBank("Union Bank");
-OtherBank bank4 = new OtherBank("Access Bank");
 
 DateTime.TryParse("01/09/2006", out DateTime date);
 DateTime.TryParse("09/17/2009", out DateTime dipo_date);
@@ -33,8 +28,8 @@ User ubabankuser1 = new User("akeredolu", "samuel", adate, "akere");
 DateTime.TryParse("09/05/2007", out DateTime bdate);
 User ubabankuser2 = new User("rufai", "eniola", bdate, "akere");
 
-bank1.add_user(ubabankuser1);
-bank1.add_user(ubabankuser2);
+banks[0].add_user(ubabankuser1);
+banks[0].add_user(ubabankuser2);
 
 
 // Stanbic IBTC data
@@ -43,8 +38,8 @@ User stanbicbankuser1 = new User("akeredolu", "samuel", sadate, "akere");
 DateTime.TryParse("09/05/2007", out DateTime sbdate);
 User stanbicbankuser2 = new User("rufai", "eniola", sbdate, "akere");
 
-bank1.add_user(ubabankuser1);
-bank1.add_user(ubabankuser2);
+banks[1].add_user(stanbicbankuser1);
+banks[1].add_user(stanbicbankuser2);
 
 // Union bank data
 DateTime.TryParse("01/09/2006", out DateTime uadate);
@@ -52,8 +47,8 @@ User unionbankuser1 = new User("akeredolu", "samuel", uadate, "akere");
 DateTime.TryParse("09/05/2007", out DateTime ubdate);
 User unionbankuser2 = new User("rufai", "eniola", ubdate, "akere");
 
-bank1.add_user(unionbankuser1);
-bank1.add_user(unionbankuser2);
+banks[2].add_user(unionbankuser1);
+banks[2].add_user(unionbankuser2);
 
 // Union bank data
 DateTime.TryParse("01/09/2006", out DateTime abadate);
@@ -61,17 +56,8 @@ User accessbankuser1 = new User("akeredolu", "samuel", abadate, "akere");
 DateTime.TryParse("09/05/2007", out DateTime abdate);
 User accessbankuser2 = new User("rufai", "eniola", abdate, "akere");
 
-bank1.add_user(accessbankuser1);
-bank1.add_user(accessbankuser2);
-
-
-
-
-
-Console.WriteLine($"""
-{users[0]}
-{users[1]}
-""");
+banks[3].add_user(accessbankuser1);
+banks[3].add_user(accessbankuser2);
 
 while (keep_going)
 {
@@ -97,10 +83,16 @@ while (keep_going)
             transfer();
             break;
         case 3:
+            check_balance();
             break;
         case 4:
+            withdraw();
             break;
         case 5:
+            save();
+            break;
+        case 6:
+            list_accounts();
             break;
         
         default:
@@ -116,6 +108,52 @@ while (keep_going)
     }
 }
 
+void list_accounts()
+{
+    User current_user = login();
+
+    if (current_user == null)
+    {
+        return;
+    }
+
+}
+
+void save()
+{
+    User current_user = login();
+
+    if (current_user == null)
+    {
+        return;
+    }
+
+    Console.Write("Enter the amount of money you wantto save");
+    double amount = Convert.ToDouble(Console.ReadLine());
+    current_user.Save(amount);
+    Console.WriteLine($"""
+    {amount} saved successfully
+    """);
+
+}
+
+void withdraw()
+{
+    User current_user = login();
+
+    if (current_user == null)
+    {
+        return;
+    }
+    Console.Write("Enter the amount of money you wantto save");
+    double amount = Convert.ToDouble(Console.ReadLine());
+    current_user.Withdraw(amount);
+    Console.WriteLine($"""
+    Take your cash >
+    {amount} withdrawn successfully!!
+    """);
+}
+
 User login()
 {
     Console.WriteLine("Enter your account number: ");
@@ -126,8 +164,25 @@ User login()
         Console.WriteLine("Account number does not exist");
         return user;
     }
-    User current_user = user;
-    return current_user;
+
+    string pass;
+    int retry_num = 0;
+    do
+    {
+        Console.WriteLine("Enter your password: ");
+        pass = Console.ReadLine() ?? "";
+
+        if (user.check_password(pass) == false)
+        {
+            Console.WriteLine("wrong password!!");
+        }
+        retry_num += 1;
+    } while (user.check_password(pass) == false || retry_num >= 3);
+    if (retry_num >= 3)
+    {
+        Console.WriteLine("You've exceeded the number of retrys");
+    }
+    return user;
 }
 
 User get_user(String acc_no)
@@ -149,9 +204,33 @@ User get_other_bank_user(string acc_no, OtherBank bank)
     return user;
 }
 
+
+void check_balance()
+{
+    User current_user = login();
+
+    if (current_user == null)
+    {
+        return;
+    }
+
+    Console.WriteLine($"""
+    Here is your Account status:
+
+    Account name: {current_user.name}
+    Account number: {current_user.account.id}
+    Account Balance: {current_user.account.balance}
+    """);
+}
+
 void transfer()
 {
     User current_user = login();
+
+    if (current_user == null)
+    {
+        return;
+    }
 
     string transfer_id;
     do
@@ -190,14 +269,13 @@ void transfer()
         }
         Console.Write("Enter amount to send: ");
         double amount = Convert.ToDouble(Console.ReadLine());
-        bank.transfer_to_ourbank(current_user, recepient, amount, out string response);
+        ourbank.transfer_to_ourbank(current_user, recepient, amount, out string response);
         Console.WriteLine($"""
         your new balance: {current_user.account.balance} 
 
         recepient: {recepient.name.ToString()} Credited
         
         Transfer Successful
-
         """);
     }
     else
@@ -221,12 +299,13 @@ void transfer()
 
         } while (bank_id != "1" && bank_id != "2" && bank_id != "3" && bank_id != "4");
 
-        OtherBank bank = banks[Convert.ToInt32(bank_id)];
+        OtherBank bank = banks[Convert.ToInt32(bank_id) - 1];
         Console.Write($"""
         Enter recipient's account number: 
         """);
         string recipient_acc = Console.ReadLine() ?? "";
         User? recepient = get_other_bank_user(recipient_acc, bank);
+        Console.WriteLine(recepient); // to be erased
         if (recepient == null)
         {
             Console.WriteLine("""
@@ -234,16 +313,16 @@ void transfer()
             """);
             return;
         }
-        Console.Write("Enter amount to send: ");
+        Console.Write("Enter amount to send:\n");
         double amount = Convert.ToDouble(Console.ReadLine());
-        bank.receive_from_other_banks(current_user, recepient, amount, out string response);
+        ourbank.Transfer_to_other_banks(current_user, recepient, bank, amount, out string response);
+
         Console.WriteLine($"""
         your new balance: {current_user.account.balance} 
 
         recepient: {recepient.name.ToString()} Credited
         
         Transfer Successful
-
         """);
     }
 }
@@ -271,12 +350,11 @@ void create_new_account()
         {
             Console.WriteLine("Password not the same. Repeat password.");
         }
-
     } while (password != repeat_password);
 
     DateTime.TryParse(d_o_b, out DateTime date);
     User new_user = new User(last_name, first_name, date, password);
     users.Append(new_user);
 
-    Console.WriteLine($"{bank.ToString()} \n {new_user.ToString()}");
+    Console.WriteLine($"{ourbank.ToString()} \n {new_user.ToString()}");
 }
