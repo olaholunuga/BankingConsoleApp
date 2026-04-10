@@ -225,10 +225,12 @@ public class Bank
 public class OtherBank
 {
     private string _name;
+    private List<User> _bank_users;
 
     public OtherBank(string name)
     {
         _name = name;
+        _bank_users = [];
     }
 
     public override string ToString()
@@ -240,6 +242,23 @@ public class OtherBank
     {
         recepient.Save(amount);
         response = "SUCCESS";
+    }
+
+    public void add_user(User user)
+    {
+        this._bank_users.Add(user);
+    }
+
+    public User get_user_by_acc_no(string acc_no)
+    {
+        foreach(var user in this._bank_users)
+        {
+            if (user.account.id == acc_no)
+            {
+                return user;
+            }
+        }
+        return null;
     }
 
 }

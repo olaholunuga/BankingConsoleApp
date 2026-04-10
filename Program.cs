@@ -25,6 +25,49 @@ User[] users = {
     new User("bolu", "dipo", dipo_date, "dipopo")
 };
 
+// OTHER BANKS DATA
+
+// uba data
+DateTime.TryParse("01/09/2006", out DateTime adate);
+User ubabankuser1 = new User("akeredolu", "samuel", adate, "akere");
+DateTime.TryParse("09/05/2007", out DateTime bdate);
+User ubabankuser2 = new User("rufai", "eniola", bdate, "akere");
+
+bank1.add_user(ubabankuser1);
+bank1.add_user(ubabankuser2);
+
+
+// Stanbic IBTC data
+DateTime.TryParse("01/09/2006", out DateTime sadate);
+User stanbicbankuser1 = new User("akeredolu", "samuel", sadate, "akere");
+DateTime.TryParse("09/05/2007", out DateTime sbdate);
+User stanbicbankuser2 = new User("rufai", "eniola", sbdate, "akere");
+
+bank1.add_user(ubabankuser1);
+bank1.add_user(ubabankuser2);
+
+// Union bank data
+DateTime.TryParse("01/09/2006", out DateTime uadate);
+User unionbankuser1 = new User("akeredolu", "samuel", uadate, "akere");
+DateTime.TryParse("09/05/2007", out DateTime ubdate);
+User unionbankuser2 = new User("rufai", "eniola", ubdate, "akere");
+
+bank1.add_user(unionbankuser1);
+bank1.add_user(unionbankuser2);
+
+// Union bank data
+DateTime.TryParse("01/09/2006", out DateTime abadate);
+User accessbankuser1 = new User("akeredolu", "samuel", abadate, "akere");
+DateTime.TryParse("09/05/2007", out DateTime abdate);
+User accessbankuser2 = new User("rufai", "eniola", abdate, "akere");
+
+bank1.add_user(accessbankuser1);
+bank1.add_user(accessbankuser2);
+
+
+
+
+
 Console.WriteLine($"""
 {users[0]}
 {users[1]}
@@ -100,6 +143,12 @@ User get_user(String acc_no)
     return null;
 }
 
+User get_other_bank_user(string acc_no, OtherBank bank)
+{
+    User user = bank.get_user_by_acc_no(acc_no);
+    return user;
+}
+
 void transfer()
 {
     User current_user = login();
@@ -113,13 +162,15 @@ void transfer()
         """);
 
         transfer_id = Console.ReadLine() ?? "";
-        if (transfer_id != "1" || transfer_id != "2")
+        Console.WriteLine(transfer_id);
+        
+        if (transfer_id != "1" && transfer_id != "2") 
         {
             Console.WriteLine("""
             Invalid Input!
             """);
         }
-    } while (transfer_id != "1" || transfer_id != "2");
+    } while (transfer_id != "1" && transfer_id != "2");
 
 
     if (transfer_id == "1")
@@ -162,17 +213,20 @@ void transfer()
             """);
 
             bank_id = Console.ReadLine() ?? "";
+            
+            if (bank_id != "1" && bank_id != "2" && bank_id != "3" && bank_id != "4") 
+            {
+                Console.WriteLine("Invalid Input!\nNumbers 1-4 are the only valid inputs");
+            }
 
-            Console.WriteLine("Invalid Input!\nNumbers 1-4 are the only valid inputs");
+        } while (bank_id != "1" && bank_id != "2" && bank_id != "3" && bank_id != "4");
 
-        } while (bank_id != "1" || bank_id != "2" || bank_id != "3" || bank_id != "4");
-
-
+        OtherBank bank = banks[Convert.ToInt32(bank_id)];
         Console.Write($"""
         Enter recipient's account number: 
         """);
         string recipient_acc = Console.ReadLine() ?? "";
-        User? recepient = get_user(recipient_acc);
+        User? recepient = get_other_bank_user(recipient_acc, bank);
         if (recepient == null)
         {
             Console.WriteLine("""
@@ -182,7 +236,7 @@ void transfer()
         }
         Console.Write("Enter amount to send: ");
         double amount = Convert.ToDouble(Console.ReadLine());
-        bank.Transfer_to_other_banks(current_user, recepient, banks[Convert.ToInt32(bank_id)], amount, out string response);
+        bank.receive_from_other_banks(current_user, recepient, amount, out string response);
         Console.WriteLine($"""
         your new balance: {current_user.account.balance} 
 
@@ -221,7 +275,8 @@ void create_new_account()
     } while (password != repeat_password);
 
     DateTime.TryParse(d_o_b, out DateTime date);
-    User current_user = new User(last_name, first_name, date, password);
+    User new_user = new User(last_name, first_name, date, password);
+    users.Append(new_user);
 
-    Console.WriteLine($"{bank.ToString()} \n {current_user.ToString()}");
+    Console.WriteLine($"{bank.ToString()} \n {new_user.ToString()}");
 }
