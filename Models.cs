@@ -1,19 +1,31 @@
+using System.Text.Json.Serialization;
 namespace Models;
+
 public class User
 {
+	[JsonInclude]
     private Guid _id;
+    [JsonInclude]
     private string first;
+    [JsonInclude]
     private string last;
+    [JsonInclude]
     private Account _account;
+    [JsonInclude]
     private DateTime _d_o_b;
+    [JsonInclude]
     private string _password;
 
     public Account account
     {
         get => _account;
     }
+    
+    public User ()
+    {
+    }
 
-    public User (string lastName, string firstName, DateTime d_o_b, string password, Bank bank = null)
+    public User (string lastName, string firstName, DateTime d_o_b, string password, OtherBank bank = null)
     {
         first = firstName;
         last = lastName;
@@ -25,6 +37,7 @@ public class User
         else
         {
             _account = new OtherBankAccount();
+            bank.add_user(this);
         }
         _password = password;
         _d_o_b = d_o_b;
@@ -82,18 +95,23 @@ public class User
 
 public class Account
 {
+	[JsonInclude]
     private long _id;
+    [JsonInclude]
     private static int[] prefix_list = [207, 142, 657];
+    [JsonInclude]
     private double _balance;
+    [JsonInclude]
     private Transaction[] _transactions;
+    [JsonInclude]
     private TransactionWithOtherBank[] _transactions_with_other_bank;
-
+    
 
     public Account ()
     {
         int acc_prefix = prefix_list[Random.Shared.Next(prefix_list.Length)];
         long acc_suffix = Random.Shared.Next(0, 10000000);
-        _id = (acc_prefix * 10000000) + acc_suffix;
+        _id = (acc_prefix * 10000000L) + acc_suffix;
         _transactions = [];
         _transactions_with_other_bank = [];
         _balance = 30.00;
@@ -148,15 +166,21 @@ public class Account
 
 public class OtherBankAccount : Account
 {
+	[JsonInclude]
     private long _id;
+    [JsonInclude]
     private static int[] prefix_list = [207, 142, 657];
+    [JsonInclude]
     private double _balance;
+    [JsonInclude]
     private Transaction[] _transactions;
+    
+    
     public OtherBankAccount ()
     {
         int acc_prefix = prefix_list[Random.Shared.Next(prefix_list.Length)];
         long acc_suffix = Random.Shared.Next(0, 10000000);
-        _id = (acc_prefix * 10000000) + acc_suffix;
+        _id = (acc_prefix * 10000000L) + acc_suffix;
         _transactions = [];
         _balance = 30.00;
     }
@@ -164,11 +188,16 @@ public class OtherBankAccount : Account
 
 public class Transaction
 {
+	[JsonInclude]
     private string _type; // outbound or inbound
+    [JsonInclude]
     private Guid id;
+    [JsonInclude]
     private double _amount; // 89700393456
+    [JsonInclude]
     private Account _recipient;
-
+    
+    
     public Transaction(string type, double amount, Account account)
     {
         id = Guid.NewGuid();
@@ -181,10 +210,16 @@ public class Transaction
 
 public class TransactionWithOtherBank
 {    
+	[JsonInclude]
     private Guid id;
+    [JsonInclude]
     private double _amount; // 89700393456
+    [JsonInclude]
     private User _recipient;
+    [JsonInclude]
     private OtherBank _bank;
+    
+    
     public TransactionWithOtherBank(double amount, User receipient, OtherBank bank)
     {
         id = Guid.NewGuid();
@@ -197,6 +232,10 @@ public class TransactionWithOtherBank
 public class Bank
 {
     private string _name = "OurBank";
+    
+    public Bank()
+    {
+    }
 
     public override string ToString()
     {
@@ -207,7 +246,8 @@ public class Bank
     {
         if (amount > current_user.account.balance)
         {
-           response = "Failed: Insurficient balance"; 
+           response = "Failed: Insurficient balance";
+           return;
         }
         current_user.Transfer(amount, recepient);
         recepient.Save(amount);
@@ -229,13 +269,20 @@ public class Bank
 
 public class OtherBank
 {
+    [JsonInclude]
     private string _name;
+    [JsonInclude]
     private List<User> _bank_users;
+    
+    public OtherBank()
+    {
+        _bank_users = new List<User>();
+    }
 
     public OtherBank(string name)
     {
         _name = name;
-        _bank_users = [];
+        _bank_users = new List<User>();
     }
 
     public override string ToString()
@@ -256,7 +303,7 @@ public class OtherBank
 
     public User get_user_by_acc_no(string acc_no)
     {
-        Console.WriteLine($"{this._bank_users.ToString()}");
+        // Console.WriteLine($"{this._bank_users.ToString()}");
         foreach(var user in this._bank_users)
         {
             if (user.account.id == acc_no)
@@ -267,26 +314,9 @@ public class OtherBank
         return null;
     }
 
+    public List<User> users
+    {
+        get => _bank_users;
+    }
+
 }
-
-
-/*
-
-
-
-Console.WriteLine($"""
------------------ uba bank users ------
-{ubabankuser1}
-{ubabankuser2}
-""");
-
-Console.WriteLine($"""
-{users[0]}
-{users[1]}
-""");
-
-this._bank_users.ForEach(Console.WriteLine);
-Console.WriteLine($"-----------{this._name}");
-
-
-*/

@@ -1,63 +1,16 @@
 ﻿using Models;
-
+using DataStorage;
+using System.Net;
 bool keep_going = true;
 
 Bank ourbank = new Bank();
 
-OtherBank[] banks =
-{
-    new OtherBank("UBA"),
-    new OtherBank("Stanbic IBTC"),
-    new OtherBank("Union Bank"),
-    new OtherBank("Access Bank")
-};
+OtherBank[] banks = DataStore.Load_banks();
 
-DateTime.TryParse("01/09/2006", out DateTime date);
-DateTime.TryParse("09/17/2009", out DateTime dipo_date);
+List<User> users = DataStore.Load_users();
 
-User[] users = {
-    new User("olunuga", "olaoluwa", date, "olaholunuga"),
-    new User("bolu", "dipo", dipo_date, "dipopo")
-};
+List<User> other_users = DataStore.other_users(banks);
 
-// OTHER BANKS DATA
-
-// uba data
-DateTime.TryParse("01/09/2006", out DateTime adate);
-User ubabankuser1 = new User("akeredolu", "samuel", adate, "akere");
-DateTime.TryParse("09/05/2007", out DateTime bdate);
-User ubabankuser2 = new User("rufai", "eniola", bdate, "akere");
-
-banks[0].add_user(ubabankuser1);
-banks[0].add_user(ubabankuser2);
-
-
-// Stanbic IBTC data
-DateTime.TryParse("01/09/2006", out DateTime sadate);
-User stanbicbankuser1 = new User("akeredolu", "samuel", sadate, "akere");
-DateTime.TryParse("09/05/2007", out DateTime sbdate);
-User stanbicbankuser2 = new User("rufai", "eniola", sbdate, "akere");
-
-banks[1].add_user(stanbicbankuser1);
-banks[1].add_user(stanbicbankuser2);
-
-// Union bank data
-DateTime.TryParse("01/09/2006", out DateTime uadate);
-User unionbankuser1 = new User("akeredolu", "samuel", uadate, "akere");
-DateTime.TryParse("09/05/2007", out DateTime ubdate);
-User unionbankuser2 = new User("rufai", "eniola", ubdate, "akere");
-
-banks[2].add_user(unionbankuser1);
-banks[2].add_user(unionbankuser2);
-
-// Union bank data
-DateTime.TryParse("01/09/2006", out DateTime abadate);
-User accessbankuser1 = new User("akeredolu", "samuel", abadate, "akere");
-DateTime.TryParse("09/05/2007", out DateTime abdate);
-User accessbankuser2 = new User("rufai", "eniola", abdate, "akere");
-
-banks[3].add_user(accessbankuser1);
-banks[3].add_user(accessbankuser2);
 
 while (keep_going)
 {
@@ -69,7 +22,7 @@ while (keep_going)
     What would you like to do?
     1. Create new Account             2. Transfer
     3. Check balance                  4. Withdraw
-    5. Save
+    5. Save                           6. List Accounts
     """);
 
     int account = Convert.ToInt32(Console.ReadLine());
@@ -78,18 +31,23 @@ while (keep_going)
     {
         case 1:
             create_new_account();
+            DataStore.save_users(users);
             break;
         case 2:
             transfer();
+            DataStore.save_users(users);
+            DataStore.save_other_users(other_users);
             break;
         case 3:
             check_balance();
             break;
         case 4:
             withdraw();
+            DataStore.save_users(users);
             break;
         case 5:
             save();
+            DataStore.save_users(users);
             break;
         case 6:
             list_accounts();
@@ -107,6 +65,8 @@ while (keep_going)
         keep_going = false;
     }
 }
+DataStore.save_other_users(other_users);
+DataStore.save_users(users);
 
 void list_accounts()
 {
@@ -116,7 +76,38 @@ void list_accounts()
     {
         return;
     }
+    Console.WriteLine("""
+    ----------- OurBank Accounts ------------
 
+    """);
+    foreach (var user in users)
+    {
+        Console.WriteLine($"""
+        {user.name}
+        {user.account.id}
+        ----------------------------------
+        """);
+    }
+
+    Console.WriteLine("""
+    ----------- Other Bank's Accounts ------------
+    """);
+    foreach (var bank in banks)
+    {
+        Console.WriteLine($"""
+        ---------- {bank} Accounts ---------
+
+        """);
+        foreach (var user in bank.users)
+        {
+            Console.WriteLine($"""
+            {user.name}
+            {user.account.id}
+            -----------------------------------
+
+            """);
+        }
+    }
 }
 
 void save()
@@ -270,13 +261,22 @@ void transfer()
         Console.Write("Enter amount to send: ");
         double amount = Convert.ToDouble(Console.ReadLine());
         ourbank.transfer_to_ourbank(current_user, recepient, amount, out string response);
-        Console.WriteLine($"""
-        your new balance: {current_user.account.balance} 
+        if (response == "Failed: Insurficient balance")
+        {
+            Console.WriteLine("""
+            Failed: Insurficient balance
+            """);
+        }
+        else
+        {
+            Console.WriteLine($"""
+            your new balance: {current_user.account.balance} 
 
-        recepient: {recepient.name.ToString()} Credited
+            recepient: {recepient.name.ToString()} Credited
         
-        Transfer Successful
-        """);
+            Transfer Successful
+            """);
+        }
     }
     else
     {
@@ -305,7 +305,9 @@ void transfer()
         """);
         string recipient_acc = Console.ReadLine() ?? "";
         User? recepient = get_other_bank_user(recipient_acc, bank);
-        Console.WriteLine(recepient); // to be erased
+        Console.WriteLine($"""
+        recipient: {recepient.name}
+        """);
         if (recepient == null)
         {
             Console.WriteLine("""
@@ -316,14 +318,23 @@ void transfer()
         Console.Write("Enter amount to send:\n");
         double amount = Convert.ToDouble(Console.ReadLine());
         ourbank.Transfer_to_other_banks(current_user, recepient, bank, amount, out string response);
+        if (response == "Failed: Insurficient balance")
+        {
+            Console.WriteLine("""
+            Failed: Insurficient balance
+            """);
+            
+        }
+        else
+        {
+            Console.WriteLine($"""
+            your new balance: {current_user.account.balance} 
 
-        Console.WriteLine($"""
-        your new balance: {current_user.account.balance} 
-
-        recepient: {recepient.name.ToString()} Credited
+            recepient: {recepient.name.ToString()} Credited
         
-        Transfer Successful
-        """);
+            Transfer Successful
+            """);
+        }
     }
 }
 
@@ -351,10 +362,9 @@ void create_new_account()
             Console.WriteLine("Password not the same. Repeat password.");
         }
     } while (password != repeat_password);
-
     DateTime.TryParse(d_o_b, out DateTime date);
     User new_user = new User(last_name, first_name, date, password);
-    users.Append(new_user);
+    users.Add(new_user);
 
-    Console.WriteLine($"{ourbank.ToString()} \n {new_user.ToString()}");
+    Console.WriteLine($"{ourbank.ToString()}\n{new_user.ToString()}");
 }
