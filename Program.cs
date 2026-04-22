@@ -119,11 +119,11 @@ void save()
         return;
     }
 
-    Console.Write("Enter the amount of money you wantto save");
+    Console.Write("Enter the amount of money you want to save");
     double amount = Convert.ToDouble(Console.ReadLine());
     current_user.Save(amount);
     Console.WriteLine($"""
-    {amount} saved successfully
+    ${amount} saved successfully
     """);
 
 }
@@ -136,12 +136,12 @@ void withdraw()
     {
         return;
     }
-    Console.Write("Enter the amount of money you wantto save");
+    Console.Write("Enter the amount of money you want to withdraw");
     double amount = Convert.ToDouble(Console.ReadLine());
     current_user.Withdraw(amount);
     Console.WriteLine($"""
     Take your cash >
-    {amount} withdrawn successfully!!
+    ${amount} withdrawn successfully!!
     """);
 }
 
