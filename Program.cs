@@ -57,6 +57,7 @@ while (keep_going)
     }
 
     Console.WriteLine("Would you like to do something else? \"Yes\" or \"No\"");
+    Console.WriteLine("You can press any key to continue.");
     string _continue = Console.ReadLine() ?? "";
     if (_continue == "no" || _continue == "NO" || _continue == "No" || _continue == "n")
     {
@@ -322,7 +323,7 @@ void transfer()
         """);
 
         transfer_id = Console.ReadLine() ?? "";
-        Console.WriteLine(transfer_id);
+        // Console.WriteLine(transfer_id);
         
         if (transfer_id != "1" && transfer_id != "2") 
         {
