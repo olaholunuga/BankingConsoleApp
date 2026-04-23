@@ -1,7 +1,5 @@
 ﻿using Models;
 using DataStorage;
-using System.Net;
-using System.Xml.XPath;
 bool keep_going = true;
 
 Bank ourbank = new Bank();
@@ -210,7 +208,7 @@ void save()
     }
 
     // Console.Write("Enter the amount of money you want to save");
-    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to save", 5));
+    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to save", 1));
     current_user.Save(amount);
     Console.WriteLine($"""
     ${amount} saved successfully
@@ -227,7 +225,7 @@ void withdraw()
         return;
     }
     // Console.Write("Enter the amount of money you want to withdraw");
-    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to withdraw", 5));
+    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to withdraw", 1));
     current_user.Withdraw(amount);
     Console.WriteLine($"""
     Take your cash >
@@ -250,7 +248,7 @@ User login()
     int retry_num = 0;
     do
     {
-        Console.WriteLine("Enter your password: ");
+        // Console.WriteLine("Enter your password: ");
         pass = inputPassword("Enter your password: ");
 
         if (user.check_password(pass) == false)
@@ -352,7 +350,7 @@ void transfer()
             return;
         }
         // Console.Write("Enter amount to send: ");
-        double amount = Convert.ToDouble(inputDigits("Enter amount to send: ", 5));
+        double amount = Convert.ToDouble(inputDigits("Enter amount to send: ", 1));
         ourbank.transfer_to_ourbank(current_user, recepient, amount, out string response);
         if (response == "Failed: Insurficient balance")
         {
@@ -409,7 +407,7 @@ void transfer()
             return;
         }
         // Console.Write("Enter amount to send:\n");
-        double amount = Convert.ToDouble(inputDigits("Enter amount to send:\n", 5));
+        double amount = Convert.ToDouble(inputDigits("Enter amount to send:\n", 1));
         ourbank.Transfer_to_other_banks(current_user, recepient, bank, amount, out string response);
         if (response == "Failed: Insurficient balance")
         {

@@ -114,7 +114,7 @@ public class Account
         _id = (acc_prefix * 10000000L) + acc_suffix;
         _transactions = [];
         _transactions_with_other_bank = [];
-        _balance = 30.00;
+        _balance = 00.00;
     }
 
     public string id
