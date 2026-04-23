@@ -99,21 +99,23 @@ string inputInt(int min, int max)
     return userInput;
 }
 
-string inputDigits(string prompt, int lenght = 10)
+string inputDigits(string prompt, int lenght = 10, int min = 0)
 {
     string userInput;
     Console.WriteLine(prompt);
+    int red;
     do
     {
         userInput = Console.ReadLine() ?? "";
         userInput.Trim();
-        if (!userInput.All(char.IsDigit) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght)
+        int.TryParse(userInput, out red);
+        if (!userInput.All(char.IsDigit) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght || red <= min)
         {
-            Console.WriteLine("Input cannot be empty, symbols or whitespace. Input numbers having 0-9 only");
-            Console.WriteLine($"Input must be at least  of lenght {lenght}");
+            Console.WriteLine("Input cannot be letters, empty, symbols or whitespace. Input numbers having 0-9 only");
+            Console.WriteLine($"Input must be at least of lenght {lenght} and not less than 1");
             Console.WriteLine(prompt);
         }
-    } while (!userInput.All(char.IsDigit) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght);
+    } while (!userInput.All(char.IsDigit) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght || red <= min);
     return userInput;
 }
 
@@ -227,6 +229,13 @@ void withdraw()
     }
     // Console.Write("Enter the amount of money you want to withdraw");
     double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to withdraw", 1));
+    if (current_user.account.balance < amount)
+    {
+        Console.WriteLine("""
+        Transaction Unsuccessfull! Insufficient account balance.
+        """);
+        return;
+    }
     current_user.Withdraw(amount);
     Console.WriteLine($"""
     Take your cash >
