@@ -1,6 +1,7 @@
 ﻿using Models;
 using DataStorage;
 using System.Net;
+using System.Xml.XPath;
 bool keep_going = true;
 
 Bank ourbank = new Bank();
@@ -25,9 +26,9 @@ while (keep_going)
     5. Save                           6. List Accounts
     """);
 
-    int account = Convert.ToInt32(Console.ReadLine());
+    int option = Convert.ToInt32(inputInt(1, 6));
 
-    switch (account)
+    switch (option)
     {
         case 1:
             create_new_account();
@@ -67,6 +68,95 @@ while (keep_going)
 }
 DataStore.save_other_users(other_users);
 DataStore.save_users(users);
+
+string inputString(int lenght = 3)
+{
+    string userInput;
+    do
+    {
+        userInput = Console.ReadLine() ?? "";
+        userInput.Trim();
+        if (!userInput.All(char.IsLetter) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght)
+        {
+            Console.WriteLine("Input cannot be empty, symbols or whitespace. Input valid letter only");
+            Console.WriteLine($"Input must be at least  of lenght {lenght}");
+        }
+    } while (!userInput.All(char.IsLetter) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght);
+    return userInput;
+}
+
+string inputInt(int min, int max)
+{
+    string userInput;
+    do
+    {
+        userInput = Console.ReadLine() ?? "";
+        userInput.Trim();
+        if (!int.TryParse(userInput, out int res) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || res < min || res > max)
+        {
+            Console.WriteLine($"Input cannot be empty, symbols or whitespace. Input valid digits {min}-{max} only");
+        }
+    } while (!int.TryParse(userInput, out int result) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || result < min || result > max);
+    return userInput;
+}
+
+string inputDigits(string prompt, int lenght = 10)
+{
+    string userInput;
+    Console.WriteLine(prompt);
+    do
+    {
+        userInput = Console.ReadLine() ?? "";
+        userInput.Trim();
+        if (!userInput.All(char.IsDigit) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght)
+        {
+            Console.WriteLine("Input cannot be empty, symbols or whitespace. Input numbers having 0-9 only");
+            Console.WriteLine($"Input must be at least  of lenght {lenght}");
+            Console.WriteLine(prompt);
+        }
+    } while (!userInput.All(char.IsDigit) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght);
+    return userInput;
+}
+
+DateTime inputDate()
+{
+    string userInput;
+    DateTime date;
+    DateOnly today;
+    do
+    {
+        userInput = Console.ReadLine() ?? "";
+        bool dateBool = DateTime.TryParse(userInput, out date);
+        today = DateOnly.FromDateTime(DateTime.Now);
+        if (!dateBool || DateOnly.FromDateTime(date) > today || DateOnly.FromDateTime(date) < today.AddYears(-100))
+        {
+            Console.WriteLine("Enter valid date in the following format - mm/dd/yyyy");
+            Console.WriteLine("Date must be at most 100 years before today.");
+            Console.WriteLine("Enter a valid date");
+        }
+        
+    } while (!DateTime.TryParse(userInput, out date) || DateOnly.FromDateTime(date) > today || DateOnly.FromDateTime(date) < today.AddYears(-100));
+    return date;
+}
+
+// password to be treated later
+string inputPassword(string prompt, int lenght = 3)
+{
+    string userInput;
+    Console.WriteLine(prompt);
+    do
+    {
+        userInput = Console.ReadLine() ?? "";
+        userInput.Trim();
+        if ((!userInput.Any(char.IsLetterOrDigit) && !userInput.Any(char.IsSymbol)) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght)
+        {
+            Console.WriteLine("Input cannot be empty, whitespace. Input valid letters, numbers or symbols");
+            Console.WriteLine($"Password lenght must be more than {lenght}");
+            Console.WriteLine(prompt);
+        }
+    } while ((!userInput.Any(char.IsLetterOrDigit) && !userInput.Any(char.IsSymbol)) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght);
+    return userInput;
+}
 
 void list_accounts()
 {
@@ -119,8 +209,8 @@ void save()
         return;
     }
 
-    Console.Write("Enter the amount of money you want to save");
-    double amount = Convert.ToDouble(Console.ReadLine());
+    // Console.Write("Enter the amount of money you want to save");
+    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to save", 5));
     current_user.Save(amount);
     Console.WriteLine($"""
     ${amount} saved successfully
@@ -136,8 +226,8 @@ void withdraw()
     {
         return;
     }
-    Console.Write("Enter the amount of money you want to withdraw");
-    double amount = Convert.ToDouble(Console.ReadLine());
+    // Console.Write("Enter the amount of money you want to withdraw");
+    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to withdraw", 5));
     current_user.Withdraw(amount);
     Console.WriteLine($"""
     Take your cash >
@@ -147,8 +237,8 @@ void withdraw()
 
 User login()
 {
-    Console.WriteLine("Enter your account number: ");
-    var acc_number = Console.ReadLine() ?? ""; 
+    // Console.WriteLine("Enter your account number: ");
+    var acc_number = inputDigits("Enter your account number: "); 
     User? user = get_user(acc_number);
     if (user == null)
     {
@@ -161,7 +251,7 @@ User login()
     do
     {
         Console.WriteLine("Enter your password: ");
-        pass = Console.ReadLine() ?? "";
+        pass = inputPassword("Enter your password: ");
 
         if (user.check_password(pass) == false)
         {
@@ -172,6 +262,8 @@ User login()
     if (retry_num >= 3)
     {
         Console.WriteLine("You've exceeded the number of retrys");
+        Console.WriteLine("Try again later.");
+        return null;
     }
     return user;
 }
@@ -238,6 +330,7 @@ void transfer()
         {
             Console.WriteLine("""
             Invalid Input!
+            Enter 1 or 2.
             """);
         }
     } while (transfer_id != "1" && transfer_id != "2");
@@ -245,11 +338,11 @@ void transfer()
 
     if (transfer_id == "1")
     {
-        Console.Write($"""
+        string p = $"""
         ----------- Transfer to OurBank ---------------
         Enter recipient's account number: 
-        """);
-        string recipient_acc = Console.ReadLine() ?? "";
+        """;
+        string recipient_acc = inputDigits(p);
         User? recepient = get_user(recipient_acc);
         if (recepient == null)
         {
@@ -258,8 +351,8 @@ void transfer()
             """);
             return;
         }
-        Console.Write("Enter amount to send: ");
-        double amount = Convert.ToDouble(Console.ReadLine());
+        // Console.Write("Enter amount to send: ");
+        double amount = Convert.ToDouble(inputDigits("Enter amount to send: ", 5));
         ourbank.transfer_to_ourbank(current_user, recepient, amount, out string response);
         if (response == "Failed: Insurficient balance")
         {
@@ -300,10 +393,10 @@ void transfer()
         } while (bank_id != "1" && bank_id != "2" && bank_id != "3" && bank_id != "4");
 
         OtherBank bank = banks[Convert.ToInt32(bank_id) - 1];
-        Console.Write($"""
+        string p = $"""
         Enter recipient's account number: 
-        """);
-        string recipient_acc = Console.ReadLine() ?? "";
+        """;
+        string recipient_acc = inputDigits(p);
         User? recepient = get_other_bank_user(recipient_acc, bank);
         Console.WriteLine($"""
         recipient: {recepient.name}
@@ -315,8 +408,8 @@ void transfer()
             """);
             return;
         }
-        Console.Write("Enter amount to send:\n");
-        double amount = Convert.ToDouble(Console.ReadLine());
+        // Console.Write("Enter amount to send:\n");
+        double amount = Convert.ToDouble(inputDigits("Enter amount to send:\n", 5));
         ourbank.Transfer_to_other_banks(current_user, recepient, bank, amount, out string response);
         if (response == "Failed: Insurficient balance")
         {
@@ -341,29 +434,28 @@ void transfer()
 void create_new_account()
 {
     Console.WriteLine("what is your first name?");
-    string first_name = Console.ReadLine() ?? "";
+    string first_name = inputString();
 
     Console.WriteLine("What is your last name?");
-    string last_name = Console.ReadLine() ?? "";
+    string last_name = inputString();
 
     Console.WriteLine("Date of Birth - mm/dd/yyyy ");
-    string d_o_b = Console.ReadLine() ?? "";
+    DateTime d_o_b = inputDate();
 
-    Console.WriteLine("Password");
-    string password = Console.ReadLine() ?? "";
+    // Console.WriteLine("Password");
+    string password = inputPassword("Password");
 
     string repeat_password = "";
     do
     {
-        Console.WriteLine("Repeat Password");
-        repeat_password = Console.ReadLine() ?? "";
+        // Console.WriteLine("Repeat Password");
+        repeat_password = inputPassword("Repeat Password");
         if (password != repeat_password)
         {
             Console.WriteLine("Password not the same. Repeat password.");
         }
     } while (password != repeat_password);
-    DateTime.TryParse(d_o_b, out DateTime date);
-    User new_user = new User(last_name, first_name, date, password);
+    User new_user = new User(last_name, first_name, d_o_b, password);
     users.Add(new_user);
 
     Console.WriteLine($"{ourbank.ToString()}\n{new_user.ToString()}");
