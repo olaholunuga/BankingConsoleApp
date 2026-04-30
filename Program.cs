@@ -10,6 +10,36 @@ List<User> users = DataStore.Load_users();
 
 List<User> other_users = DataStore.other_users(banks);
 
+List<Account> user_accounts = DataStore.user_accounts();
+List<OtherBankAccount> other_accounts = DataStore.other_bank_accounts();
+
+foreach (Account account in user_accounts)
+{
+    Console.WriteLine(
+        $"""
+        {account.Id}
+        {account.Balance}
+        """
+    );
+}
+foreach (User user in users)
+{
+    Console.WriteLine(
+        $"""
+        {user.Account}
+        {user.Name}
+        """
+    );
+}
+foreach (OtherBank bank in banks)
+{
+    Console.WriteLine(
+        $"""
+        {bank.Name}
+        """
+    );
+}
+
 
 while (keep_going)
 {
@@ -34,15 +64,18 @@ while (keep_going)
             break;
         case 2:
             transfer();
-            DataStore.save_users(users);
-            DataStore.save_other_users(other_users);
+            DataStore.save_accounts(user_accounts);
+            DataStore.save_other_accounts(other_accounts);
+            // DataStore.save_users(users);
+            // DataStore.save_other_users(other_users);
             break;
         case 3:
             check_balance();
             break;
         case 4:
             withdraw();
-            DataStore.save_users(users);
+            DataStore.save_accounts(user_accounts);
+            // DataStore.save_users(users);
             break;
         case 5:
             save();
@@ -67,6 +100,8 @@ while (keep_going)
 }
 DataStore.save_other_users(other_users);
 DataStore.save_users(users);
+DataStore.save_accounts(user_accounts);
+DataStore.save_other_accounts(other_accounts);
 
 string inputString(int lenght = 3)
 {
@@ -103,16 +138,23 @@ string inputDigits(string prompt, int lenght = 10, int min = 0)
 {
     string userInput;
     Console.WriteLine(prompt);
-    int red;
+    long red;
     do
     {
         userInput = Console.ReadLine() ?? "";
         userInput.Trim();
-        int.TryParse(userInput, out red);
+        long.TryParse(userInput, out red);
         if (!userInput.All(char.IsDigit) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght || red <= min)
         {
+            Console.WriteLine("why this is happening");
+            Console.WriteLine(!userInput.All(char.IsDigit));
+            Console.WriteLine(string.IsNullOrWhiteSpace(userInput));
+            Console.WriteLine(string.IsNullOrEmpty(userInput));
+            Console.WriteLine(userInput.Length < lenght);
+            Console.WriteLine(red <= min);
+            Console.WriteLine("End test");
             Console.WriteLine("Input cannot be letters, empty, symbols or whitespace. Input numbers having 0-9 only");
-            Console.WriteLine($"Input must be at least of lenght {lenght} and not less than 1");
+            Console.WriteLine($"Input must be at least of lenght {lenght} and not less than {min}");
             Console.WriteLine(prompt);
         }
     } while (!userInput.All(char.IsDigit) || string.IsNullOrWhiteSpace(userInput) || string.IsNullOrEmpty(userInput) || userInput.Length < lenght || red <= min);
@@ -174,8 +216,8 @@ void list_accounts()
     foreach (var user in users)
     {
         Console.WriteLine($"""
-        {user.name}
-        {user.account.id}
+        {user.Name}
+        {user.Account}
         ----------------------------------
         """);
     }
@@ -192,8 +234,8 @@ void list_accounts()
         foreach (var user in bank.users)
         {
             Console.WriteLine($"""
-            {user.name}
-            {user.account.id}
+            {user.Name}
+            {user.Account}
             -----------------------------------
 
             """);
@@ -211,8 +253,10 @@ void save()
     }
 
     // Console.Write("Enter the amount of money you want to save");
-    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to save", 1));
-    current_user.Save(amount);
+    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to save", 1, 1));
+    string account = current_user.Account;
+    var user_account = user_accounts.FirstOrDefault(u => u.Id == account);
+    user_account.Balance += amount;
     Console.WriteLine($"""
     ${amount} saved successfully
     """);
@@ -228,15 +272,17 @@ void withdraw()
         return;
     }
     // Console.Write("Enter the amount of money you want to withdraw");
-    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to withdraw", 1));
-    if (current_user.account.balance < amount)
+    double amount = Convert.ToDouble(inputDigits("Enter the amount of money you want to withdraw", 1, 1));
+    string account = current_user.Account;
+    var user_account = user_accounts.FirstOrDefault(u => u.Id == account);
+    if (user_account.Balance < amount)
     {
         Console.WriteLine("""
         Transaction Unsuccessfull! Insufficient account balance.
         """);
         return;
     }
-    current_user.Withdraw(amount);
+    user_account.Balance -= amount;
     Console.WriteLine($"""
     Take your cash >
     ${amount} withdrawn successfully!!
@@ -278,15 +324,16 @@ User login()
 
 User get_user(String acc_no)
 {
-    foreach (var user in users)
-    {
-        Account acc = user.account;
-        if (acc.id == acc_no)
-        {
-            return user;
-        }
-    }
-    return null;
+    // foreach (var user in users)
+    // {
+    //     Account acc = user.account;
+    //     if (acc.id == acc_no)
+    //     {
+    //         return user;
+    //     }
+    // }
+    var user = users.FirstOrDefault(u => u.Account == acc_no);
+    return user;
 }
 
 User get_other_bank_user(string acc_no, OtherBank bank)
@@ -308,9 +355,9 @@ void check_balance()
     Console.WriteLine($"""
     Here is your Account status:
 
-    Account name: {current_user.name}
-    Account number: {current_user.account.id}
-    Account Balance: {current_user.account.balance}
+    Account name: {current_user.Name}
+    Account number: {current_user.Account}
+    Account Balance: {(user_accounts.FirstOrDefault(u => u.Id == current_user.Account)).Balance}
     """);
 }
 
@@ -361,23 +408,35 @@ void transfer()
         }
         // Console.Write("Enter amount to send: ");
         double amount = Convert.ToDouble(inputDigits("Enter amount to send: ", 1));
-        ourbank.transfer_to_ourbank(current_user, recepient, amount, out string response);
-        if (response == "Failed: Insurficient balance")
+        var account = user_accounts.FirstOrDefault(u => u.Id == current_user.Account);
+        if (account.Balance < amount)
         {
-            Console.WriteLine("""
-            Failed: Insurficient balance
-            """);
+            Console.WriteLine(
+                """
+                Failed transaction: Insuficient Balance.
+                """
+            );
         }
         else
         {
+            account.Balance -= amount;
+            var receipient_acc = user_accounts.FirstOrDefault(u => recepient.Account == u.Id);
+            receipient_acc.Balance += amount;
             Console.WriteLine($"""
-            your new balance: {current_user.account.balance} 
+            your new balance: {account.Balance} 
 
-            recepient: {recepient.name.ToString()} Credited
+            recepient: {recepient.Name} Credited
         
             Transfer Successful
             """);
         }
+        // ourbank.transfer_to_ourbank(current_user, recepient, amount, out string response);
+        // if (response == "Failed: Insurficient balance")
+        // {
+        //     Console.WriteLine("""
+        //     Failed: Insurficient balance
+        //     """);
+        // }
     }
     else
     {
@@ -407,7 +466,7 @@ void transfer()
         string recipient_acc = inputDigits(p);
         User? recepient = get_other_bank_user(recipient_acc, bank);
         Console.WriteLine($"""
-        recipient: {recepient.name}
+        recipient: {recepient.Name}
         """);
         if (recepient == null)
         {
@@ -417,25 +476,40 @@ void transfer()
             return;
         }
         // Console.Write("Enter amount to send:\n");
-        double amount = Convert.ToDouble(inputDigits("Enter amount to send:\n", 1));
-        ourbank.Transfer_to_other_banks(current_user, recepient, bank, amount, out string response);
-        if (response == "Failed: Insurficient balance")
+        double amount = Convert.ToDouble(inputDigits("Enter amount to send:\n", 1, 1));
+        var user_account = user_accounts.FirstOrDefault(u => u.Id == current_user.Account);
+        var receipient_acc = other_accounts.FirstOrDefault(u => u.Id == recipient_acc);
+        if (user_account.Balance < amount)
         {
-            Console.WriteLine("""
-            Failed: Insurficient balance
-            """);
-            
+            Console.WriteLine(
+                """
+                Faild Transaction: Insuficient Balance
+                """
+            );
         }
         else
         {
+            // withraw from user and add to receipient.
+            user_account.Balance -= amount;
+            receipient_acc.Balance += amount;
             Console.WriteLine($"""
-            your new balance: {current_user.account.balance} 
+            your new balance: {user_account.Balance} 
 
-            recepient: {recepient.name.ToString()} Credited
+            recepient: {recepient.Name} Credited
         
             Transfer Successful
             """);
         }
+
+
+        // ourbank.Transfer_to_other_banks(current_user, recepient, bank, amount, out string response);
+        // if (response == "Failed: Insurficient balance")
+        // {
+        //     Console.WriteLine("""
+        //     Failed: Insurficient balance
+        //     """);
+            
+        // }
     }
 }
 
@@ -463,8 +537,11 @@ void create_new_account()
             Console.WriteLine("Password not the same. Repeat password.");
         }
     } while (password != repeat_password);
-    User new_user = new User(last_name, first_name, d_o_b, password);
+    Account account = new Account();
+    string account_id = Convert.ToString(account.Id);
+    User new_user = new User(last_name, first_name, d_o_b, password, account_id);
     users.Add(new_user);
+    user_accounts.Add(account);
 
-    Console.WriteLine($"{ourbank.ToString()}\n{new_user.ToString()}");
+    Console.WriteLine($"{ourbank}\n{new_user}");
 }

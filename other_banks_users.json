@@ -1,1 +1,66 @@
-[{"account":{"id":"2013780246","balance":30,"_id":2013780246,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"id":"663dd6af-b049-41ad-9b70-28e01ba3603d","name":"samuel akeredolu","_balance":30,"_id":"663dd6af-b049-41ad-9b70-28e01ba3603d","first":"samuel","last":"akeredolu","_account":{"id":"2013780246","balance":30,"_id":2013780246,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"_d_o_b":"2006-01-09T00:00:00","_password":"akere"},{"account":{"id":"1429720742","balance":30,"_id":1429720742,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"id":"3e9fd5fe-916a-423a-8051-a6e100836f26","name":"eniola rufai","_balance":30,"_id":"3e9fd5fe-916a-423a-8051-a6e100836f26","first":"eniola","last":"rufai","_account":{"id":"1429720742","balance":30,"_id":1429720742,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"_d_o_b":"2007-09-05T00:00:00","_password":"akere"},{"account":{"id":"2013257417","balance":30,"_id":2013257417,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"id":"a04ae720-7e09-4c8a-9571-e6e16680d4a7","name":"samuel akeredolu","_balance":30,"_id":"a04ae720-7e09-4c8a-9571-e6e16680d4a7","first":"samuel","last":"akeredolu","_account":{"id":"2013257417","balance":30,"_id":2013257417,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"_d_o_b":"2006-01-09T00:00:00","_password":"akere"},{"account":{"id":"2014226666","balance":30,"_id":2014226666,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"id":"1705578c-de07-4552-95fe-451e870e88e3","name":"eniola rufai","_balance":30,"_id":"1705578c-de07-4552-95fe-451e870e88e3","first":"eniola","last":"rufai","_account":{"id":"2014226666","balance":30,"_id":2014226666,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"_d_o_b":"2007-09-05T00:00:00","_password":"akere"},{"account":{"id":"1426898930","balance":30,"_id":1426898930,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"id":"80d7f241-0163-4809-a141-bc0c5dc3c157","name":"samuel akeredolu","_balance":30,"_id":"80d7f241-0163-4809-a141-bc0c5dc3c157","first":"samuel","last":"akeredolu","_account":{"id":"1426898930","balance":30,"_id":1426898930,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"_d_o_b":"2006-01-09T00:00:00","_password":"akere"},{"account":{"id":"1421496782","balance":30,"_id":1421496782,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"id":"6df5d4fa-5938-41c1-ae1c-8027164ec6de","name":"eniola rufai","_balance":30,"_id":"6df5d4fa-5938-41c1-ae1c-8027164ec6de","first":"eniola","last":"rufai","_account":{"id":"1421496782","balance":30,"_id":1421496782,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"_d_o_b":"2007-09-05T00:00:00","_password":"akere"},{"account":{"id":"1425018146","balance":40,"_id":1425018146,"_balance":40,"_transactions":[],"_transactions_with_other_bank":[]},"id":"94d3cd36-dc4a-4a9d-bf2b-92e54b32f0cc","name":"samuel akeredolu","_balance":40,"_id":"94d3cd36-dc4a-4a9d-bf2b-92e54b32f0cc","first":"samuel","last":"akeredolu","_account":{"id":"1425018146","balance":40,"_id":1425018146,"_balance":40,"_transactions":[],"_transactions_with_other_bank":[]},"_d_o_b":"2006-01-09T00:00:00","_password":"akere"},{"account":{"id":"1427016822","balance":30,"_id":1427016822,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"id":"fddf630b-87b7-41f0-aed0-af35d5fca6b9","name":"eniola rufai","_balance":30,"_id":"fddf630b-87b7-41f0-aed0-af35d5fca6b9","first":"eniola","last":"rufai","_account":{"id":"1427016822","balance":30,"_id":1427016822,"_balance":30,"_transactions":[],"_transactions_with_other_bank":[]},"_d_o_b":"2007-09-05T00:00:00","_password":"akere"}]
+[
+    {
+        "Id": "663dd6af-b049-41ad-9b70-28e01ba3603d",
+        "Name": "samuel akeredolu",
+        "First": "samuel",
+        "Last": "akeredolu",
+        "Dob": "2006-01-09T00:00:00",
+        "Password": "akere"
+    },
+    {
+        "Id": "3e9fd5fe-916a-423a-8051-a6e100836f26",
+        "Name": "eniola rufai",
+        "First": "eniola",
+        "Last": "rufai",
+        "Dob": "2007-09-05T00:00:00",
+        "Password": "akere"
+    },
+    {
+        "Id": "a04ae720-7e09-4c8a-9571-e6e16680d4a7",
+        "Name": "samuel akeredolu",
+        "First": "samuel",
+        "Last": "akeredolu",
+        "Dob": "2006-01-09T00:00:00",
+        "Password": "akere"
+    },
+    {
+        "Id": "1705578c-de07-4552-95fe-451e870e88e3",
+        "Name": "eniola rufai",
+        "First": "eniola",
+        "Last": "rufai",
+        "Dob": "2007-09-05T00:00:00",
+        "Password": "akere"
+    },
+    {
+        "Id": "80d7f241-0163-4809-a141-bc0c5dc3c157",
+        "Name": "samuel akeredolu",
+        "First": "samuel",
+        "Last": "akeredolu",
+        "Dob": "2006-01-09T00:00:00",
+        "Password": "akere"
+    },
+    {
+        "Id": "6df5d4fa-5938-41c1-ae1c-8027164ec6de",
+        "Name": "eniola rufai",
+        "First": "eniola",
+        "Last": "rufai",
+        "Dob": "2007-09-05T00:00:00",
+        "Password": "akere"
+    },
+    {
+        "Id": "94d3cd36-dc4a-4a9d-bf2b-92e54b32f0cc",
+        "Name": "samuel akeredolu",
+        "First": "samuel",
+        "Last": "akeredolu",
+        "Dob": "2006-01-09T00:00:00",
+        "Password": "akere"
+    },
+    {
+        "Id": "fddf630b-87b7-41f0-aed0-af35d5fca6b9",
+        "Name": "eniola rufai",
+        "First": "eniola",
+        "Last": "rufai",
+        "Dob": "2007-09-05T00:00:00",
+        "Password": "akere"
+    }
+]

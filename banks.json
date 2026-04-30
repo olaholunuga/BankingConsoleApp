@@ -1,1 +1,18 @@
-[{"_name":"UBA","_bank_users":[]},{"_name":"Stanbic IBTC","_bank_users":[]},{"_name":"Union Bank","_bank_users":[]},{"_name":"Access Bank","_bank_users":[]}]
+[
+    {
+        "Name": "UBA",
+        "BankUsers": []
+    },
+    {
+        "Name": "Stanbic IBTC",
+        "BankUsers": []
+    },
+    {
+        "Name": "Union Bank",
+        "BankUsers": []
+    },
+    {
+        "Name": "Access Bank",
+        "BankUsers": []
+    }
+]

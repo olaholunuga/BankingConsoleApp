@@ -1,0 +1,44 @@
+[
+    {
+        "Id": "2079208833",
+        "Balance": 40,
+        "Transactions": [],
+        "TransactionsWithOtherBank": []
+    },
+    {
+        "Id": "2019688239",
+        "Balance": 2,
+        "Transactions": [],
+        "TransactionsWithOtherBank": []
+    },
+    {
+        "Id": "2010031267",
+        "Balance": 15,
+        "Transactions": [],
+        "TransactionsWithOtherBank": []
+    },
+    {
+        "Id": "2073666967",
+        "Balance": 20,
+        "Transactions": [],
+        "TransactionsWithOtherBank": []
+    },
+    {
+        "Id": "6575620240",
+        "Balance": 40,
+        "Transactions": [],
+        "TransactionsWithOtherBank": []
+    },
+    {
+        "Id": "6575618492",
+        "Balance": 50,
+        "Transactions": [],
+        "TransactionsWithOtherBank": []
+    },
+    {
+        "Id": "2076603520",
+        "Balance": 191,
+        "Transactions": [],
+        "TransactionsWithOtherBank": []
+    }
+]

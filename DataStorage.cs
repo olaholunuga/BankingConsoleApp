@@ -4,21 +4,21 @@ namespace DataStorage;
 
 class DataStore
 {
-static public OtherBank[] Load_banks()
-{
-    string banks_json = File.ReadAllText("banks.json");
-    OtherBank[] banks = JsonSerializer.Deserialize<OtherBank[]>(banks_json) ?? [];
-    return banks;
-}
+    static public OtherBank[] Load_banks()
+    {
+        string banks_json = File.ReadAllText("banks.json");
+        OtherBank[] banks = JsonSerializer.Deserialize<OtherBank[]>(banks_json) ?? [];
+        return banks;
+    }
 
-static public List<User> Load_users()
+    static public List<User> Load_users()
     {
         string our_users = File.ReadAllText("our_bank_users.json");
         List<User> users = JsonSerializer.Deserialize<List<User>>(our_users) ?? [];
         return users;
     }
 
-static public List<User> other_users(OtherBank[] banks)
+    static public List<User> other_users(OtherBank[] banks)
     {
         string other_users = File.ReadAllText("other_banks_users.json");
         List<User> users = JsonSerializer.Deserialize<List<User>>(other_users) ?? [];
@@ -43,15 +43,45 @@ static public List<User> other_users(OtherBank[] banks)
         }
         return users;
     }
-static public void save_users(List<User> users)
+
+    static public List<Account> user_accounts()
     {
-        string users_json = JsonSerializer.Serialize(users);
+        string user_accounts = File.ReadAllText("accounts.json");
+        List<Account> accounts = JsonSerializer.Deserialize<List<Account>>(user_accounts) ?? [];
+        return accounts;
+    }
+    static public List<OtherBankAccount> other_bank_accounts()
+    {
+        string user_accounts = File.ReadAllText("other_bank_accounts.json");
+        List<OtherBankAccount> accounts = JsonSerializer.Deserialize<List<OtherBankAccount>>(user_accounts) ?? [];
+        return accounts;
+    }
+
+    static public void save_accounts(List<Account> accounts)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string json = JsonSerializer.Serialize(accounts, options);
+        File.WriteAllText("accounts.json", json);
+    }
+
+    static public void save_other_accounts(List<OtherBankAccount> accounts)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string json = JsonSerializer.Serialize(accounts, options);
+        File.WriteAllText("other_bank_accounts.json", json);
+    }
+
+    static public void save_users(List<User> users)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string users_json = JsonSerializer.Serialize(users, options);
         File.WriteAllText("our_bank_users.json", users_json);
     }
 
-static public void save_other_users(List<User> users)
+    static public void save_other_users(List<User> users)
     {
-        string users_json = JsonSerializer.Serialize(users);
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string users_json = JsonSerializer.Serialize(users, options);
         File.WriteAllText("other_banks_users.json", users_json);
     }
 }
