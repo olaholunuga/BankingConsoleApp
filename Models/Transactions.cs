@@ -4,11 +4,11 @@ namespace Models;
 
 public class Transaction
 {
-    public string Type; // outbound or inbound
+    public string Type { get; set; } // outbound or inbound
     // 
-    public Guid Id;
-    public double Amount; // 89700393456
-    public string Recipient;
+    public Guid Id { get; set; }
+    public double Amount { get; set; } // 89700393456
+    public string Recipient { get; set; }
     
     
     public Transaction(string type, double amount, string account)
@@ -22,10 +22,10 @@ public class Transaction
 
 public class TransactionWithOtherBank
 {    
-    public Guid Id;
-    public double Amount; // 89700393456
-    public string Recipient;
-    public string Bank;
+    public Guid Id { get; set; }
+    public double Amount { get; set; } // 89700393456
+    public string Recipient { get; set; }
+    public string Bank { get; set; }
     
     
     public TransactionWithOtherBank(double amount, string receipient_acc_id, string bank)

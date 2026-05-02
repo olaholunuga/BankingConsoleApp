@@ -224,6 +224,7 @@ void list_accounts()
 
     Console.WriteLine("""
     ----------- Other Bank's Accounts ------------
+    
     """);
     foreach (var bank in banks)
     {
@@ -237,7 +238,6 @@ void list_accounts()
             {user.Name}
             {user.Account}
             -----------------------------------
-
             """);
         }
     }
@@ -357,7 +357,7 @@ void check_balance()
 
     Account name: {current_user.Name}
     Account number: {current_user.Account}
-    Account Balance: {(user_accounts.FirstOrDefault(u => u.Id == current_user.Account)).Balance}
+    Account Balance: {user_accounts.FirstOrDefault(u => u.Id == current_user.Account).Balance}
     """);
 }
 
@@ -465,9 +465,6 @@ void transfer()
         """;
         string recipient_acc = inputDigits(p);
         User? recepient = get_other_bank_user(recipient_acc, bank);
-        Console.WriteLine($"""
-        recipient: {recepient.Name}
-        """);
         if (recepient == null)
         {
             Console.WriteLine("""
@@ -475,6 +472,9 @@ void transfer()
             """);
             return;
         }
+        Console.WriteLine($"""
+        recipient: {recepient.Name}
+        """);
         // Console.Write("Enter amount to send:\n");
         double amount = Convert.ToDouble(inputDigits("Enter amount to send:\n", 1, 1));
         var user_account = user_accounts.FirstOrDefault(u => u.Id == current_user.Account);

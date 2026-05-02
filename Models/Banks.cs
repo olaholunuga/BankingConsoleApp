@@ -17,7 +17,7 @@ public class Bank
 
 public class OtherBank
 {
-    public string Name;
+    public string Name { get; set; }
     private List<User> BankUsers;
     
     public OtherBank()

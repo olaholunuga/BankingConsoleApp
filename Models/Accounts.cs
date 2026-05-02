@@ -3,11 +3,11 @@ using System.Text.Json.Serialization;
 namespace Models;
 public class Account
 {
-    public string Id;
+    public string Id { get; set; }
     public static int[] PrefixList = [207, 142, 657];
-    public double Balance;
-    public List<string> Transactions;
-    public List<string> TransactionsWithOtherBank;
+    public double Balance { get; set; }
+    public List<string> Transactions { get; set; }
+    public List<string> TransactionsWithOtherBank { get; set; }
     public Account ()
     {
         int acc_prefix = PrefixList[Random.Shared.Next(PrefixList.Length)];

@@ -1,18 +1,14 @@
 [
     {
-        "Name": "UBA",
-        "BankUsers": []
+        "Name": "UBA"
     },
     {
-        "Name": "Stanbic IBTC",
-        "BankUsers": []
+        "Name": "Stanbic IBTC"
     },
     {
-        "Name": "Union Bank",
-        "BankUsers": []
+        "Name": "Union Bank"
     },
     {
-        "Name": "Access Bank",
-        "BankUsers": []
+        "Name": "Access Bank"
     }
 ]

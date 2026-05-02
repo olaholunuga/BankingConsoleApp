@@ -4,12 +4,12 @@ namespace Models;
 
 public class User
 {
-    public Guid Id { get; init; }
-    public string First;
-    public string Last;
-    public string Account { get; }
-    public DateTime Dob;
-    public string Password;
+    public Guid Id { get; set; }
+    public string First { get; set; }
+    public string Last { get; set; }
+    public string Account { get; set; }
+    public DateTime Dob { get; set; }
+    public string Password { get; set; }
 
     public User () {}
 
